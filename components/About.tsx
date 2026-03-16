@@ -68,7 +68,7 @@ export default function OurStory() {
 
         .our-story-section {
           font-family: 'Nunito Sans', sans-serif;
-          background: var(--bg-warm);
+          background: #ffffff;
           padding: 100px 0;
         }
 
