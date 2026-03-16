@@ -1,684 +1,622 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SplitText } from "gsap/SplitText";
+import { useRef } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useSpring,
+  AnimatePresence,
+} from "framer-motion";
 
-gsap.registerPlugin(ScrollTrigger, SplitText);
+/* ─── Token constants ─── */
+const GOLD = "#b8924a";
+const GOLD_LIGHT = "#d4aa6a";
+const CREAM = "#fdfaf6";
+const INK = "#1c1814";
+const MUTED = "#9e9389";
+const BORDER = "rgba(28,24,20,0.1)";
 
-const MARQUEE_ITEMS = [
-  "Brand Strategy",
-  "Visual Identity",
-  "Motion Design",
-  "Digital Experience",
-  "Art Direction",
-  "Brand Systems",
-  "Brand Strategy",
-  "Visual Identity",
-  "Motion Design",
-  "Digital Experience",
-  "Art Direction",
-  "Brand Systems",
-];
+/* ─── Animation variants ─── */
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  show: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1], delay },
+  }),
+};
+
+const charVariant = {
+  hidden: { y: "110%", opacity: 0 },
+  show: (i: number) => ({
+    y: "0%",
+    opacity: 1,
+    transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1], delay: 0.05 * i },
+  }),
+};
+
+const scaleIn = {
+  hidden: { scale: 0.6, opacity: 0 },
+  show: (delay = 0) => ({
+    scale: 1,
+    opacity: 1,
+    transition: { type: "spring", stiffness: 120, damping: 14, delay },
+  }),
+};
+
+const slideInRight = {
+  hidden: { x: 60, opacity: 0 },
+  show: (delay = 0) => ({
+    x: 0,
+    opacity: 1,
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay },
+  }),
+};
+
+/* ─── Split text helper ─── */
+function AnimatedWord({ word, startDelay = 0 }: { word: string; startDelay?: number }) {
+  return (
+    <span style={{ display: "inline-block", overflow: "hidden", verticalAlign: "bottom" }}>
+      {word.split("").map((char, i) => (
+        <motion.span
+          key={i}
+          custom={i + startDelay}
+          variants={charVariant}
+          style={{ display: "inline-block", whiteSpace: char === " " ? "pre" : "normal" }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
 
 const STATS = [
   { value: "140+", label: "Brands Built" },
   { value: "12", label: "Years of Craft" },
-  { value: "3×", label: "Awwwards SOTD" },
+  { value: "3×", label: "Awwwards" },
 ];
 
+const MARQUEE_ITEMS = [
+  "Brand Strategy", "Visual Identity", "Motion Design",
+  "Digital Experience", "Art Direction", "Brand Systems",
+  "Brand Strategy", "Visual Identity", "Motion Design",
+  "Digital Experience", "Art Direction", "Brand Systems",
+];
+
+const TAGS = [
+  { label: "Nike — Rebrand '24", top: "26%", right: "26%", delay: 1.0 },
+  { label: "Tesla — Campaign", top: "50%", right: "10%", delay: 1.15 },
+  { label: "Adidas — Identity", top: "66%", right: "30%", delay: 1.3 },
+];
+
+/* ─── Background image URL (Unsplash — bright airy creative studio) ─── */
+const BG_IMAGE =
+  "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1800&q=80";
+
 export default function Hero() {
-  const heroRef = useRef<HTMLElement>(null);
-  const headlineRef = useRef<HTMLHeadingElement>(null);
-  const eyebrowRef = useRef<HTMLDivElement>(null);
-  const subRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
-  const marqueeRef = useRef<HTMLDivElement>(null);
-  const circleRef = useRef<HTMLDivElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
-  const tagRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const morphRef = useRef<SVGPathElement>(null);
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const cursorTextRef = useRef<HTMLSpanElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
 
-  /* ── Master GSAP timeline ── */
-  useEffect(() => {
-    if (!heroRef.current) return;
+  /* Parallax on scroll */
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
+  const headlineY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+  const headlineOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
-    const ctx = gsap.context(() => {
-      // 1. Split headline text
-      const split = new SplitText(headlineRef.current, {
-        type: "lines,words,chars",
-        linesClass: "split-line",
-      });
+  /* Mouse tilt on circle */
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springX = useSpring(mouseX, { stiffness: 60, damping: 18 });
+  const springY = useSpring(mouseY, { stiffness: 60, damping: 18 });
 
-      gsap.set(split.chars, { yPercent: 110, opacity: 0 });
-
-      // 2. Master timeline
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
-
-      // Eyebrow
-      tl.fromTo(
-        eyebrowRef.current,
-        { xPercent: -20, opacity: 0 },
-        { xPercent: 0, opacity: 1, duration: 0.8 },
-        0
-      );
-
-      // Headline chars cascade
-      tl.to(
-        split.chars,
-        {
-          yPercent: 0,
-          opacity: 1,
-          duration: 1.1,
-          stagger: { amount: 0.55, from: "start" },
-          ease: "power3.out",
-        },
-        0.15
-      );
-
-      // Decorative line grows
-      tl.fromTo(
-        lineRef.current,
-        { scaleX: 0 },
-        { scaleX: 1, duration: 1.2, ease: "expo.out", transformOrigin: "left center" },
-        0.3
-      );
-
-      // Circle morphs in
-      tl.fromTo(
-        circleRef.current,
-        { scale: 0, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 1.2, ease: "elastic.out(1, 0.6)" },
-        0.5
-      );
-
-      // Sub paragraph
-      tl.fromTo(
-        subRef.current,
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.9 },
-        0.7
-      );
-
-      // CTA buttons
-      tl.fromTo(
-        ctaRef.current,
-        { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8 },
-        0.85
-      );
-
-      // Stats stagger
-      const statItems = statsRef.current?.querySelectorAll(".stat-item");
-      if (statItems && statItems.length > 0) {
-        tl.fromTo(
-          statItems,
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.7, stagger: 0.1 },
-          0.9
-        );
-      }
-
-      // Floating tags
-      tagRefs.current.forEach((tag, i) => {
-        if (!tag) return;
-        tl.fromTo(
-          tag,
-          { scale: 0.7, opacity: 0, rotation: -8 },
-          { scale: 1, opacity: 1, rotation: 0, duration: 0.9, ease: "back.out(1.4)" },
-          0.9 + i * 0.12
-        );
-      });
-
-      // SVG morph path — continuous breath animation
-      if (morphRef.current) {
-        gsap.to(morphRef.current, {
-          attr: {
-            d: "M 0 200 Q 250 80 500 200 Q 750 320 1000 200 L 1000 400 L 0 400 Z",
-          },
-          duration: 4,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-        });
-      }
-
-      // Marquee continuous scroll
-      if (marqueeRef.current) {
-        const trackWidth = marqueeRef.current.scrollWidth / 2;
-        gsap.to(marqueeRef.current, {
-          x: -trackWidth,
-          duration: 30,
-          repeat: -1,
-          ease: "none",
-        });
-      }
-
-      // Floating circle pulse
-      gsap.to(circleRef.current, {
-        scale: 1.05,
-        duration: 2.5,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: 1.5,
-      });
-
-      // ScrollTrigger: headline scrubs on scroll
-      ScrollTrigger.create({
-        trigger: heroRef.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: true,
-        onUpdate: (self) => {
-          gsap.to(headlineRef.current, {
-            y: self.progress * 120,
-            opacity: 1 - self.progress * 1.2,
-            duration: 0,
-          });
-        },
-      });
-    }, heroRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  /* ── Custom cursor ── */
-  useEffect(() => {
-    const cursor = cursorRef.current;
-    if (!cursor) return;
-
-    let mouseX = 0,
-      mouseY = 0;
-    let curX = 0,
-      curY = 0;
-    let rafId: number;
-
-    const onMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-
-    const loop = () => {
-      curX += (mouseX - curX) * 0.1;
-      curY += (mouseY - curY) * 0.1;
-      cursor.style.transform = `translate(${curX - 16}px, ${curY - 16}px)`;
-      rafId = requestAnimationFrame(loop);
-    };
-
-    window.addEventListener("mousemove", onMove);
-    rafId = requestAnimationFrame(loop);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      cancelAnimationFrame(rafId);
-    };
-  }, []);
-
-  const onEnterCTA = () => {
-    gsap.to(cursorRef.current, { scale: 3, duration: 0.35, ease: "power2.out" });
-    if (cursorTextRef.current) cursorTextRef.current.style.opacity = "1";
-  };
-
-  const onLeaveCTA = () => {
-    gsap.to(cursorRef.current, { scale: 1, duration: 0.35, ease: "power2.out" });
-    if (cursorTextRef.current) cursorTextRef.current.style.opacity = "0";
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = heroRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    mouseX.set(((e.clientX - cx) / rect.width) * 18);
+    mouseY.set(((e.clientY - cy) / rect.height) * 18);
   };
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Jost:wght@300;400;500&display=swap');
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        * { cursor: none !important; }
+        html, body { background: ${CREAM}; }
 
-        :root {
-          --cream: #faf8f5;
-          --warm-white: #f5f2ed;
-          --gold: #b8924a;
-          --gold-light: #d4aa6a;
-          --ink: #1a1714;
-          --ink-soft: #3d3630;
-          --muted: #9b9189;
-          --border: rgba(26,23,20,0.1);
-        }
-
-        .hero-section {
-          background: var(--cream);
-          color: var(--ink);
+        .hero-wrap {
+          background: ${CREAM};
+          font-family: 'Jost', sans-serif;
+          color: ${INK};
           min-height: 100svh;
-          display: flex;
-          flex-direction: column;
           position: relative;
           overflow: hidden;
-          font-family: 'Outfit', sans-serif;
-        }
-
-        /* cursor */
-        .cursor {
-          position: fixed;
-          top: 0; left: 0;
-          width: 32px; height: 32px;
-          border-radius: 50%;
-          border: 1.5px solid var(--gold);
-          pointer-events: none;
-          z-index: 9999;
           display: flex;
-          align-items: center;
-          justify-content: center;
-          will-change: transform;
-          background: rgba(184,146,74,0.06);
-        }
-        .cursor-text {
-          font-size: 0.42rem;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: var(--gold);
-          opacity: 0;
-          transition: opacity 0.2s;
-          white-space: nowrap;
+          flex-direction: column;
         }
 
-        /* subtle dot grid */
-        .dot-grid {
+        /* ── BG image layer ── */
+        .hero-bg-image {
           position: absolute;
           inset: 0;
-          pointer-events: none;
           z-index: 0;
-          background-image: radial-gradient(circle, rgba(26,23,20,0.06) 1px, transparent 1px);
-          background-size: 36px 36px;
+          will-change: transform;
         }
-
-        /* wavy SVG bottom */
-        .wave-svg {
+        .hero-bg-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center top;
+          display: block;
+        }
+        /* Light wash overlay so text stays crisp — warm ivory, not dark */
+        .hero-bg-overlay {
           position: absolute;
-          bottom: 0; left: 0; right: 0;
+          inset: 0;
           z-index: 1;
-          pointer-events: none;
+          background: linear-gradient(
+            108deg,
+            rgba(253,250,246,0.93) 0%,
+            rgba(253,250,246,0.82) 45%,
+            rgba(253,250,246,0.55) 100%
+          );
+        }
+        /* Extra right-side feather so tags are readable */
+        .hero-bg-overlay-right {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          background: linear-gradient(
+            to left,
+            rgba(253,250,246,0.72) 0%,
+            transparent 55%
+          );
         }
 
-        /* Decorative circle */
-        .deco-circle {
-          position: absolute;
-          right: 6%;
-          top: 12%;
-          width: clamp(240px, 30vw, 480px);
-          height: clamp(240px, 30vw, 480px);
-          border-radius: 50%;
-          border: 1px solid var(--border);
+        /* ── Content ── */
+        .hero-content {
+          position: relative;
+          z-index: 4;
+          flex: 1;
           display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 2;
-        }
-        .deco-circle::before {
-          content: '';
-          position: absolute;
-          inset: 16px;
-          border-radius: 50%;
-          border: 1px dashed rgba(184,146,74,0.25);
-        }
-        .deco-circle-inner {
-          width: 55%;
-          height: 55%;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #f0e6d3 0%, #e8dbc8 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
           flex-direction: column;
-          gap: 4px;
-          box-shadow: 0 12px 48px rgba(184,146,74,0.15), 0 2px 8px rgba(0,0,0,0.06);
-        }
-        .deco-circle-inner span:first-child {
-          font-family: 'Playfair Display', serif;
-          font-size: clamp(1.6rem, 3vw, 2.8rem);
-          font-weight: 400;
-          font-style: italic;
-          color: var(--gold);
-          line-height: 1;
-        }
-        .deco-circle-inner span:last-child {
-          font-size: 0.6rem;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          color: var(--muted);
+          padding: 0 5%;
+          padding-top: clamp(110px, 15vh, 170px);
         }
 
-        /* Eyebrow */
+        /* ── Eyebrow ── */
         .eyebrow {
-          display: flex;
+          display: inline-flex;
           align-items: center;
           gap: 12px;
-          font-size: 0.7rem;
-          letter-spacing: 0.2em;
+          font-size: 0.68rem;
+          letter-spacing: 0.24em;
           text-transform: uppercase;
-          color: var(--gold);
+          color: ${GOLD};
           font-weight: 500;
         }
-        .eyebrow-line {
+        .eyebrow-rule {
+          display: block;
+          width: 36px;
           height: 1px;
-          width: 40px;
-          background: var(--gold);
-          display: block;
+          background: ${GOLD};
+          flex-shrink: 0;
         }
 
-        /* Headline */
+        /* ── Headline ── */
         .headline {
-          font-family: 'Playfair Display', serif;
-          font-weight: 900;
-          font-size: clamp(3.5rem, 9.5vw, 9.5rem);
-          line-height: 0.9;
-          letter-spacing: -0.03em;
-          color: var(--ink);
-          overflow: hidden;
+          font-family: 'Cormorant Garamond', serif;
+          font-weight: 700;
+          font-size: clamp(3.8rem, 10vw, 10.5rem);
+          line-height: 0.88;
+          letter-spacing: -0.025em;
+          color: ${INK};
+          margin-top: clamp(20px, 3vh, 36px);
         }
-        .headline em {
+        .headline-italic {
           font-style: italic;
-          color: var(--gold);
+          color: ${GOLD};
         }
-        .split-line {
-          overflow: hidden;
-          display: block;
+        .headline-outline {
+          -webkit-text-stroke: 1.5px ${INK};
+          color: transparent;
         }
 
-        /* Sub */
+        /* ── Gold rule ── */
+        .gold-rule {
+          height: 1px;
+          background: linear-gradient(to right, ${GOLD_LIGHT}, transparent);
+          max-width: 520px;
+          margin: clamp(18px, 2.8vh, 32px) 0;
+          transform-origin: left;
+        }
+
+        /* ── Sub-text ── */
         .sub-text {
-          font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+          font-size: clamp(0.9rem, 1.3vw, 1.05rem);
           font-weight: 300;
-          line-height: 1.8;
-          color: var(--muted);
+          line-height: 1.82;
+          color: ${MUTED};
           max-width: 380px;
         }
 
-        /* CTA primary */
+        /* ── CTA primary ── */
         .cta-primary {
+          position: relative;
           display: inline-flex;
           align-items: center;
           gap: 10px;
-          background: var(--ink);
-          color: var(--cream);
-          font-family: 'Outfit', sans-serif;
-          font-size: 0.75rem;
+          background: ${INK};
+          color: ${CREAM};
+          font-family: 'Jost', sans-serif;
+          font-size: 0.72rem;
           font-weight: 500;
-          letter-spacing: 0.16em;
+          letter-spacing: 0.18em;
           text-transform: uppercase;
           padding: 14px 30px;
           text-decoration: none;
-          position: relative;
           overflow: hidden;
+          border: none;
+          cursor: pointer;
           transition: color 0.4s;
         }
-        .cta-primary::after {
-          content: '';
+        .cta-primary-fill {
           position: absolute;
           inset: 0;
-          background: var(--gold);
+          background: ${GOLD};
           transform: translateY(101%);
-          transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+          transition: transform 0.44s cubic-bezier(0.4,0,0.2,1);
         }
-        .cta-primary:hover::after { transform: translateY(0); }
-        .cta-primary span, .cta-primary svg { position: relative; z-index: 1; }
-        .cta-primary svg { transition: transform 0.3s; }
-        .cta-primary:hover svg { transform: translateX(4px); }
+        .cta-primary:hover .cta-primary-fill { transform: translateY(0); }
+        .cta-primary-content {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
 
-        /* CTA ghost */
+        /* ── CTA ghost ── */
         .cta-ghost {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          font-family: 'Outfit', sans-serif;
-          font-size: 0.75rem;
+          font-family: 'Jost', sans-serif;
+          font-size: 0.72rem;
           font-weight: 400;
-          letter-spacing: 0.16em;
+          letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: var(--ink-soft);
+          color: ${INK};
           text-decoration: none;
-          border-bottom: 1px solid var(--border);
+          border-bottom: 1px solid ${BORDER};
           padding-bottom: 3px;
-          transition: color 0.3s, border-color 0.3s;
+          transition: color 0.28s, border-color 0.28s;
         }
-        .cta-ghost:hover { color: var(--gold); border-color: var(--gold); }
+        .cta-ghost:hover { color: ${GOLD}; border-color: ${GOLD}; }
 
-        /* Stats */
-        .stat-value {
-          font-family: 'Playfair Display', serif;
-          font-size: clamp(1.8rem, 3vw, 2.6rem);
+        /* ── Stats ── */
+        .stat-val {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(2rem, 3.2vw, 2.8rem);
           font-weight: 700;
-          color: var(--ink);
+          color: ${INK};
           line-height: 1;
         }
-        .stat-label {
-          font-size: 0.63rem;
-          letter-spacing: 0.16em;
+        .stat-lbl {
+          font-size: 0.6rem;
+          letter-spacing: 0.2em;
           text-transform: uppercase;
-          color: var(--muted);
+          color: ${MUTED};
           margin-top: 5px;
         }
-        .stat-divider {
+        .stat-div {
           width: 1px;
-          height: 40px;
-          background: var(--border);
+          height: 38px;
+          background: ${BORDER};
           align-self: center;
         }
 
-        /* Floating tags */
+        /* ── Floating tags ── */
         .float-tag {
           position: absolute;
-          background: #fff;
-          border: 1px solid var(--border);
-          padding: 8px 14px;
-          font-size: 0.62rem;
-          letter-spacing: 0.16em;
+          background: rgba(253,250,246,0.88);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid ${BORDER};
+          padding: 9px 16px;
+          font-family: 'Jost', sans-serif;
+          font-size: 0.6rem;
+          letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: var(--ink-soft);
+          color: ${INK};
           white-space: nowrap;
-          box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-          z-index: 3;
-        }
-        .float-tag-dot {
-          display: inline-block;
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: var(--gold);
-          margin-right: 6px;
-          vertical-align: middle;
-        }
-
-        /* Marquee */
-        .marquee-wrapper {
-          overflow: hidden;
-          border-top: 1px solid var(--border);
-          border-bottom: 1px solid var(--border);
-          background: #fff;
+          box-shadow: 0 6px 28px rgba(180,140,80,0.10), 0 1px 4px rgba(0,0,0,0.05);
           z-index: 5;
-          position: relative;
-        }
-        .marquee-track {
           display: flex;
           align-items: center;
-          will-change: transform;
+          gap: 8px;
+        }
+        .tag-dot {
+          width: 6px; height: 6px;
+          border-radius: 50%;
+          background: ${GOLD};
+          flex-shrink: 0;
+        }
+
+        /* ── Right decorative circle ── */
+        .deco-ring {
+          position: absolute;
+          right: 5%;
+          top: 10%;
+          width: clamp(220px, 28vw, 440px);
+          height: clamp(220px, 28vw, 440px);
+          border-radius: 50%;
+          border: 1px solid rgba(184,146,74,0.18);
+          z-index: 3;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+        }
+        .deco-ring::before {
+          content: '';
+          position: absolute;
+          inset: 14px;
+          border-radius: 50%;
+          border: 1px dashed rgba(184,146,74,0.22);
+        }
+        .deco-ring-inner {
+          width: 52%;
+          height: 52%;
+          border-radius: 50%;
+          background: linear-gradient(135deg, rgba(240,228,208,0.9) 0%, rgba(228,210,178,0.85) 100%);
+          backdrop-filter: blur(8px);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          box-shadow: 0 8px 40px rgba(184,146,74,0.18), 0 1px 6px rgba(0,0,0,0.06);
+        }
+        .deco-ring-label-big {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(1.5rem, 2.8vw, 2.6rem);
+          font-weight: 400;
+          font-style: italic;
+          color: ${GOLD};
+          line-height: 1;
+        }
+        .deco-ring-label-sm {
+          font-family: 'Jost', sans-serif;
+          font-size: 0.55rem;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: ${MUTED};
+        }
+
+        /* ── Marquee ── */
+        .marquee-outer {
+          position: relative;
+          z-index: 6;
+          overflow: hidden;
+          border-top: 1px solid ${BORDER};
+          border-bottom: 1px solid ${BORDER};
+          background: rgba(255,255,255,0.75);
+          backdrop-filter: blur(8px);
+        }
+        .marquee-inner {
+          display: flex;
+          align-items: center;
+          padding: 14px 0;
           white-space: nowrap;
-          padding: 16px 0;
+          width: max-content;
+          animation: marquee-scroll 32s linear infinite;
+        }
+        @keyframes marquee-scroll {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
         }
         .marquee-item {
-          flex-shrink: 0;
-          font-size: 0.68rem;
-          letter-spacing: 0.2em;
+          font-size: 0.65rem;
+          letter-spacing: 0.22em;
           text-transform: uppercase;
-          color: var(--muted);
+          color: ${MUTED};
           padding: 0 4px;
+          flex-shrink: 0;
         }
         .marquee-sep {
-          color: var(--gold);
-          margin: 0 24px;
-          font-size: 0.45rem;
+          color: ${GOLD};
+          margin: 0 22px;
+          font-size: 0.42rem;
           flex-shrink: 0;
         }
 
-        /* decorative horizontal line */
-        .deco-line {
-          height: 1px;
-          background: linear-gradient(to right, transparent, var(--gold-light), transparent);
-          transform-origin: left center;
-        }
-
-        /* Bottom bar */
-        .bottom-bar {
+        /* ── Bottom bar ── */
+        .btm-bar {
+          position: relative;
+          z-index: 6;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 16px 5% 20px;
-          position: relative;
-          z-index: 5;
-          border-top: 1px solid var(--border);
-          background: var(--cream);
+          padding: 14px 5%;
+          border-top: 1px solid ${BORDER};
+          background: rgba(253,250,246,0.92);
+          backdrop-filter: blur(8px);
+          flex-wrap: wrap;
+          gap: 8px;
         }
         .social-link {
-          font-size: 0.62rem;
-          letter-spacing: 0.16em;
+          font-size: 0.6rem;
+          letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: var(--muted);
+          color: ${MUTED};
           text-decoration: none;
-          transition: color 0.25s;
+          transition: color 0.24s;
         }
-        .social-link:hover { color: var(--gold); }
+        .social-link:hover { color: ${GOLD}; }
 
-        /* animated underline on headline word */
-        .headline-underline {
-          position: relative;
-          display: inline-block;
-        }
-        .headline-underline::after {
-          content: '';
-          position: absolute;
-          bottom: 4px;
-          left: 0;
-          height: 3px;
-          width: 100%;
-          background: var(--gold-light);
-          opacity: 0.45;
-          border-radius: 2px;
-        }
-
-        /* availability dot */
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        /* ── Avail badge ── */
+        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.85)} }
         .avail-dot {
-          display: inline-block;
           width: 7px; height: 7px;
           border-radius: 50%;
-          background: #4caf7d;
-          animation: blink 2.4s ease infinite;
-          margin-right: 7px;
-          vertical-align: middle;
+          background: #5bbf8a;
+          animation: pulse-dot 2.4s ease infinite;
+          flex-shrink: 0;
         }
+
+        /* ── Arrow icon transition ── */
+        .arrow-icon { transition: transform 0.28s ease; }
+        .cta-primary:hover .arrow-icon { transform: translateX(4px); }
       `}</style>
 
-      {/* Custom cursor */}
-      <div ref={cursorRef} className="cursor">
-        <span ref={cursorTextRef} className="cursor-text">View</span>
-      </div>
+      {/* ─────────────────── HERO ─────────────────── */}
+      <div
+        ref={heroRef}
+        className="hero-wrap"
+        onMouseMove={handleMouseMove}
+      >
 
-      {/* ─── HERO ─── */}
-      <section ref={heroRef} className="hero-section">
-
-        {/* Dot grid bg */}
-        <div className="dot-grid" />
-
-        {/* Wave SVG — animated breath */}
-        <svg className="wave-svg" viewBox="0 0 1000 160" preserveAspectRatio="none" style={{ height: 120 }}>
-          <path
-            ref={morphRef}
-            d="M 0 200 Q 250 120 500 200 Q 750 280 1000 200 L 1000 400 L 0 400 Z"
-            fill="#f0e9de"
-            opacity="0.6"
+        {/* Background image with parallax */}
+        <motion.div className="hero-bg-image" style={{ y: bgY }}>
+          <img
+            src={BG_IMAGE}
+            alt="Creative studio background"
+            loading="eager"
           />
-        </svg>
+        </motion.div>
+        <div className="hero-bg-overlay" />
+        <div className="hero-bg-overlay-right" />
 
-        {/* Decorative circle (right side) */}
-        <div ref={circleRef} className="deco-circle">
-          <div className="deco-circle-inner">
-            <span>F·S</span>
-            <span>Studio</span>
+        {/* ── Decorative ring (right) with mouse tilt ── */}
+        <motion.div
+          className="deco-ring"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 100, damping: 14, delay: 0.6 }}
+          style={{ rotateX: springY, rotateY: springX }}
+        >
+          <div className="deco-ring-inner">
+            <span className="deco-ring-label-big">F·S</span>
+            <span className="deco-ring-label-sm">Studio</span>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Floating tags */}
-        <div
-          ref={(el) => { tagRefs.current[0] = el; }}
-          className="float-tag"
-          style={{ top: "28%", right: "28%" }}
-        >
-          <span className="float-tag-dot" />Nike Rebrand '24
-        </div>
-        <div
-          ref={(el) => { tagRefs.current[1] = el; }}
-          className="float-tag"
-          style={{ top: "52%", right: "14%" }}
-        >
-          <span className="float-tag-dot" />Tesla Campaign
-        </div>
-        <div
-          ref={(el) => { tagRefs.current[2] = el; }}
-          className="float-tag"
-          style={{ top: "68%", right: "32%" }}
-        >
-          <span className="float-tag-dot" />Adidas Identity
-        </div>
+        {/* ── Floating brand tags ── */}
+        {TAGS.map((tag) => (
+          <motion.div
+            key={tag.label}
+            className="float-tag"
+            style={{ top: tag.top, right: tag.right }}
+            initial={{ opacity: 0, scale: 0.75, rotate: -6 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 130, damping: 14, delay: tag.delay }}
+          >
+            <span className="tag-dot" />
+            {tag.label}
+          </motion.div>
+        ))}
 
-        {/* Main content */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "0 5%", paddingTop: "clamp(100px, 14vh, 160px)", position: "relative", zIndex: 4 }}>
+        {/* ── Main content ── */}
+        <div className="hero-content">
 
-          {/* Top bar */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "clamp(28px, 4vh, 48px)" }}>
-            <div ref={eyebrowRef} className="eyebrow">
-              <span className="eyebrow-line" />
+          {/* Top row */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "clamp(24px,3.5vh,44px)" }}>
+            {/* Eyebrow */}
+            <motion.div
+              className="eyebrow"
+              initial={{ opacity: 0, x: -24 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+            >
+              <span className="eyebrow-rule" />
               World-Class Branding Studio
-            </div>
-            <div style={{ display: "flex", alignItems: "center", fontSize: "0.65rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--muted)" }}>
+            </motion.div>
+
+            {/* Availability */}
+            <motion.div
+              style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.62rem", letterSpacing: "0.18em", textTransform: "uppercase", color: MUTED }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.7 }}
+            >
               <span className="avail-dot" />
               Available 2025
-            </div>
+            </motion.div>
           </div>
 
-          {/* Headline */}
-          <h1 ref={headlineRef} className="headline" style={{ maxWidth: "75vw" }}>
-            We shape<br />
-            brands that<br />
-            <em className="headline-underline">define</em> culture.
-          </h1>
+          {/* ── Giant headline with char animations ── */}
+          <motion.div
+            style={{ y: headlineY, opacity: headlineOpacity }}
+          >
+            <motion.h1
+              className="headline"
+              initial="hidden"
+              animate="show"
+            >
+              {/* Line 1 */}
+              <div style={{ display: "block", overflow: "hidden" }}>
+                <AnimatedWord word="We " startDelay={0} />
+                <AnimatedWord word="shape" startDelay={3} />
+              </div>
+              {/* Line 2 */}
+              <div style={{ display: "block", overflow: "hidden", marginTop: "0.05em" }}>
+                <span className="headline-outline">
+                  <AnimatedWord word="brands " startDelay={8} />
+                </span>
+                <AnimatedWord word="that" startDelay={15} />
+              </div>
+              {/* Line 3 */}
+              <div style={{ display: "block", overflow: "hidden", marginTop: "0.05em" }}>
+                <span className="headline-italic">
+                  <AnimatedWord word="define " startDelay={19} />
+                </span>
+                <AnimatedWord word="culture." startDelay={25} />
+              </div>
+            </motion.h1>
+          </motion.div>
 
-          {/* Decorative line */}
-          <div
-            ref={lineRef}
-            className="deco-line"
-            style={{ width: "100%", maxWidth: 480, marginTop: "clamp(20px, 3vh, 36px)", marginBottom: "clamp(20px, 3vh, 36px)" }}
+          {/* Gold rule */}
+          <motion.div
+            className="gold-rule"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
           />
 
-          {/* Bottom layout */}
-          <div style={{ display: "flex", gap: "clamp(32px, 5vw, 80px)", alignItems: "flex-end", flexWrap: "wrap", paddingBottom: "clamp(28px, 4vh, 48px)" }}>
+          {/* Sub + CTA + Stats row */}
+          <div style={{ display: "flex", gap: "clamp(28px,5vw,80px)", alignItems: "flex-end", flexWrap: "wrap", paddingBottom: "clamp(24px,4vh,48px)" }}>
 
-            {/* Left: sub + CTAs */}
-            <div style={{ flex: "1 1 320px", maxWidth: 420 }}>
-              <p ref={subRef} className="sub-text">
+            {/* Left column */}
+            <div style={{ flex: "1 1 300px", maxWidth: 400 }}>
+              <motion.p
+                className="sub-text"
+                variants={fadeUp}
+                initial="hidden"
+                animate="show"
+                custom={0.75}
+              >
                 From challenger startups to Fortune 500 giants — we craft identities that don't just look good, they make people feel something irreplaceable.
-              </p>
-              <div ref={ctaRef} style={{ display: "flex", alignItems: "center", gap: 20, marginTop: "clamp(24px, 3vh, 36px)", flexWrap: "wrap" }}>
-                <a
-                  href="#work"
-                  className="cta-primary"
-                  onMouseEnter={onEnterCTA}
-                  onMouseLeave={onLeaveCTA}
-                >
-                  <span>See Our Work</span>
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path d="M1 7H13M7 1L13 7L7 13" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+              </motion.p>
+
+              <motion.div
+                style={{ display: "flex", alignItems: "center", gap: 20, marginTop: "clamp(22px,3vh,34px)", flexWrap: "wrap" }}
+                variants={fadeUp}
+                initial="hidden"
+                animate="show"
+                custom={0.9}
+              >
+                <a href="#work" className="cta-primary">
+                  <div className="cta-primary-fill" />
+                  <div className="cta-primary-content">
+                    <span>See Our Work</span>
+                    <svg className="arrow-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M1 7H13M7 1L13 7L7 13" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
                 </a>
                 <a href="#studio" className="cta-ghost">
                   <span>Our Studio</span>
@@ -686,53 +624,74 @@ export default function Hero() {
                     <path d="M1 9L9 1M9 1H3M9 1V7" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
                   </svg>
                 </a>
-              </div>
+              </motion.div>
             </div>
 
-            {/* Right: Stats */}
-            <div ref={statsRef} style={{ display: "flex", alignItems: "flex-start", gap: "clamp(16px, 3vw, 40px)", flexWrap: "wrap" }}>
+            {/* Stats */}
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "clamp(14px,2.5vw,36px)", flexWrap: "wrap" }}>
               {STATS.map((stat, i) => (
-                <>
-                  <div key={stat.label} className="stat-item">
-                    <div className="stat-value">{stat.value}</div>
-                    <div className="stat-label">{stat.label}</div>
-                  </div>
+                <div key={stat.label} style={{ display: "flex", alignItems: "flex-start", gap: "clamp(14px,2.5vw,36px)" }}>
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    animate="show"
+                    custom={1.0 + i * 0.1}
+                  >
+                    <div className="stat-val">{stat.value}</div>
+                    <div className="stat-lbl">{stat.label}</div>
+                  </motion.div>
                   {i < STATS.length - 1 && (
-                    <div key={`div-${i}`} className="stat-divider" />
+                    <motion.div
+                      className="stat-div"
+                      initial={{ scaleY: 0 }}
+                      animate={{ scaleY: 1 }}
+                      transition={{ delay: 1.1 + i * 0.1, duration: 0.5 }}
+                    />
                   )}
-                </>
+                </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Marquee */}
-        <div className="marquee-wrapper">
-          <div ref={marqueeRef} className="marquee-track">
+        {/* ── Marquee strip ── */}
+        <motion.div
+          className="marquee-outer"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.0, duration: 0.6 }}
+        >
+          <div className="marquee-inner">
             {MARQUEE_ITEMS.map((item, i) => (
-              <span key={i} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+              <span key={i} style={{ display: "inline-flex", alignItems: "center" }}>
                 <span className="marquee-item">{item}</span>
                 <span className="marquee-sep">◆</span>
               </span>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        {/* Bottom bar */}
-        <div className="bottom-bar">
+        {/* ── Bottom bar ── */}
+        <motion.div
+          className="btm-bar"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
           <div style={{ display: "flex", gap: 20 }}>
             {["Instagram", "Behance", "Dribbble"].map((s) => (
               <a key={s} href="#" className="social-link">{s}</a>
             ))}
           </div>
-          <div style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontSize: "0.85rem", color: "var(--muted)" }}>
+          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "0.9rem", color: MUTED }}>
             Est. 2013
           </div>
-          <div style={{ fontSize: "0.62rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--muted)" }}>
+          <div style={{ fontSize: "0.6rem", letterSpacing: "0.14em", textTransform: "uppercase", color: MUTED }}>
             hello@formestudio.co
           </div>
-        </div>
-      </section>
+        </motion.div>
+
+      </div>
     </>
   );
 }

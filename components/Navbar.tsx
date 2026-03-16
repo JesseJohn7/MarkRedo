@@ -30,7 +30,7 @@ export default function Navbar() {
   const subsRef  = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -52,302 +52,292 @@ export default function Navbar() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap');
 
+        /* ─── CSS Variables ─── */
         :root {
-          --gold:   #c9a96e;
-          --gold2:  #e8c98a;
-          --dark:   #0a0a0a;
-          --ink:    #f5f0e8;
-          --muted:  #9e9690;
-          --border: rgba(255,255,255,0.08);
+          --accent:      #c9a96e;
+          --accent-dark: #a8834a;
+          --text:        #1a1a1a;
+          --muted:       #6b6b6b;
+          --light:       #f0f0ee;
+          --white:       #ffffff;
+          --border:      #e4e0db;
+          --shadow:      rgba(0,0,0,0.08);
         }
 
-        .nav-root { font-family: 'DM Sans', sans-serif; }
+        /* ─── Base ─── */
+        .nav-root {
+          font-family: 'Nunito Sans', sans-serif;
+          background: var(--white);
+          color: var(--text);
+        }
 
-        /* ── Logo ── */
+        /* ─── Logo ─── */
         .logo-img {
-          height: 54px;
+          height: 52px;
           width: auto;
           object-fit: contain;
-          filter: brightness(1.15) drop-shadow(0 0 12px rgba(201,169,110,0.3));
-          transition: filter 0.4s ease, transform 0.4s ease, height 0.4s ease;
+          transition: transform 0.35s ease, height 0.35s ease;
+          display: block;
         }
-        .logo-link:hover .logo-img {
-          filter: brightness(1.3) drop-shadow(0 0 22px rgba(201,169,110,0.55));
-          transform: scale(1.04);
-        }
-        .scrolled .logo-img { height: 44px; }
+        .logo-link:hover .logo-img { transform: scale(1.03); }
+        .nav-root.is-scrolled .logo-img { height: 42px; }
 
-        /* ── Desktop nav link ── */
+        /* ─── Desktop nav link ─── */
         .nav-link {
           position: relative;
-          font-size: 0.78rem;
-          font-weight: 500;
-          letter-spacing: 0.13em;
+          font-size: 0.8rem;
+          font-weight: 600;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: var(--muted);
+          color: var(--text);
           text-decoration: none;
-          padding: 6px 0;
+          padding: 8px 2px;
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          transition: color 0.3s;
-          white-space: nowrap;
-          cursor: pointer;
+          gap: 5px;
           background: none;
           border: none;
-          font-family: 'DM Sans', sans-serif;
+          cursor: pointer;
+          font-family: 'Nunito Sans', sans-serif;
+          white-space: nowrap;
+          transition: color 0.25s;
         }
         .nav-link::after {
           content: '';
           position: absolute;
-          bottom: 0; left: 0;
-          width: 0; height: 1px;
-          background: var(--gold);
-          transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+          bottom: 4px; left: 0;
+          width: 0; height: 2px;
+          background: var(--accent);
+          border-radius: 2px;
+          transition: width 0.35s cubic-bezier(0.4,0,0.2,1);
         }
-        .nav-link:hover, .nav-link.open { color: var(--ink); }
-        .nav-link:hover::after, .nav-link.open::after { width: 100%; }
+        .nav-link:hover,
+        .nav-link.is-open { color: var(--accent); }
+        .nav-link:hover::after,
+        .nav-link.is-open::after { width: 100%; }
 
-        /* chevron icon */
+        /* chevron */
         .chev {
           display: inline-block;
-          width: 7px; height: 7px;
+          width: 6px; height: 6px;
           border-right: 1.5px solid currentColor;
           border-bottom: 1.5px solid currentColor;
           transform: rotate(45deg) translateY(-2px);
-          transition: transform 0.3s ease;
+          transition: transform 0.28s ease;
           flex-shrink: 0;
+          margin-top: 1px;
         }
         .chev.up { transform: rotate(-135deg) translateY(2px); }
 
-        /* ── Dropdown panel ── */
+        /* ─── Dropdown ─── */
         .drop-panel {
           position: absolute;
-          top: calc(100% + 16px);
+          top: calc(100% + 12px);
           left: 50%;
-          transform: translateX(-50%) translateY(10px);
-          background: rgba(10,10,10,0.97);
+          transform: translateX(-50%) translateY(6px);
+          background: var(--white);
           border: 1px solid var(--border);
-          backdrop-filter: blur(24px);
-          -webkit-backdrop-filter: blur(24px);
-          border-radius: 3px;
+          border-radius: 6px;
           padding: 6px 0;
-          min-width: 210px;
+          min-width: 200px;
           opacity: 0;
           pointer-events: none;
-          transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.4,0,0.2,1);
-          z-index: 100;
-          box-shadow: 0 28px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(201,169,110,0.07), inset 0 1px 0 rgba(255,255,255,0.04);
+          transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.4,0,0.2,1);
+          z-index: 200;
+          box-shadow: 0 8px 32px var(--shadow), 0 2px 8px rgba(0,0,0,0.06);
         }
-        .drop-panel.visible {
+        .drop-panel.is-visible {
           opacity: 1;
           pointer-events: auto;
           transform: translateX(-50%) translateY(0);
         }
-        /* gold top accent line */
+        /* gold accent top border */
         .drop-panel::before {
           content: '';
           position: absolute;
-          top: -1px; left: 20%; right: 20%;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, var(--gold), transparent);
+          top: -1px; left: 24px; right: 24px;
+          height: 2px;
+          background: var(--accent);
+          border-radius: 2px 2px 0 0;
         }
 
         .drop-item {
           display: flex;
           align-items: center;
           gap: 10px;
-          padding: 11px 20px;
-          font-size: 0.75rem;
-          font-weight: 400;
-          letter-spacing: 0.1em;
+          padding: 10px 18px;
+          font-size: 0.78rem;
+          font-weight: 600;
+          letter-spacing: 0.08em;
           text-transform: uppercase;
           color: var(--muted);
           text-decoration: none;
-          transition: color 0.2s, background 0.2s, padding-left 0.2s;
+          transition: color 0.2s, background 0.2s;
           white-space: nowrap;
         }
         .drop-item:hover {
-          color: var(--gold);
-          background: rgba(201,169,110,0.05);
-          padding-left: 26px;
+          color: var(--accent);
+          background: #faf8f5;
         }
         .drop-item .dot {
-          width: 4px; height: 4px;
+          width: 5px; height: 5px;
           border-radius: 50%;
-          background: var(--gold);
+          background: var(--accent);
           opacity: 0;
-          transition: opacity 0.2s;
           flex-shrink: 0;
+          transition: opacity 0.2s;
         }
         .drop-item:hover .dot { opacity: 1; }
 
         .drop-divider {
           height: 1px;
           background: var(--border);
-          margin: 4px 16px;
+          margin: 4px 14px;
         }
 
-        /* ── SHOP button — bold & visible ── */
+        /* ─── Shop Now button — solid rectangle ─── */
         .shop-btn {
-          position: relative;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.72rem;
+          font-family: 'Nunito Sans', sans-serif;
+          font-size: 0.78rem;
           font-weight: 700;
-          letter-spacing: 0.22em;
+          letter-spacing: 0.18em;
           text-transform: uppercase;
-          padding: 12px 32px;
-          border: none;
-          background: var(--gold);
-          color: #050505;
+          padding: 12px 28px;
+          background: var(--accent);
+          color: #ffffff;
+          border: 2px solid var(--accent);
+          border-radius: 4px;
           cursor: pointer;
-          overflow: hidden;
-          transition: color 0.35s ease, box-shadow 0.35s ease;
-          box-shadow: 0 0 0 0 rgba(201,169,110,0.4);
-          clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-        }
-        .shop-btn::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, var(--gold2), var(--gold));
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+          white-space: nowrap;
+          transition: background 0.28s ease, color 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+          box-shadow: 0 2px 12px rgba(201,169,110,0.25);
         }
         .shop-btn:hover {
-          box-shadow: 0 0 30px rgba(201,169,110,0.45);
-        }
-        .shop-btn:hover::before { transform: scaleX(1); }
-        .shop-btn span { position: relative; z-index: 1; }
-
-        .nav-backdrop {
-          backdrop-filter: blur(18px);
-          -webkit-backdrop-filter: blur(18px);
+          background: var(--accent-dark);
+          border-color: var(--accent-dark);
+          box-shadow: 0 4px 20px rgba(201,169,110,0.4);
+          color: #ffffff;
         }
 
-        /* ── Mobile overlay ── */
+        /* ─── Scrolled state ─── */
+        .nav-root.is-scrolled {
+          box-shadow: 0 2px 20px var(--shadow);
+        }
+
+        /* ─── Mobile overlay — LIGHT ─── */
         .mobile-overlay {
           position: fixed;
           inset: 0;
-          background: var(--dark);
+          background: var(--white);
           z-index: 40;
           display: flex;
           flex-direction: column;
           transform: translateX(100%);
-          transition: transform 0.55s cubic-bezier(0.77,0,0.175,1);
+          transition: transform 0.5s cubic-bezier(0.77,0,0.175,1);
           overflow-y: auto;
         }
-        .mobile-overlay.open { transform: translateX(0); }
+        .mobile-overlay.is-open { transform: translateX(0); }
 
-        .grain-overlay {
-          position: absolute;
-          inset: 0;
-          opacity: 0.03;
-          pointer-events: none;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size: 180px 180px;
-        }
-
-        /* mobile items */
+        /* mobile nav item */
         .m-nav-item {
           font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(1.7rem, 5.5vw, 2.8rem);
+          font-size: clamp(1.7rem, 6vw, 2.6rem);
           font-weight: 300;
           font-style: italic;
-          color: var(--ink);
+          color: var(--text);
           text-decoration: none;
           letter-spacing: 0.02em;
           line-height: 1.2;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 14px 0;
+          padding: 15px 0;
           border-bottom: 1px solid var(--border);
           cursor: pointer;
           background: none;
           border-left: none; border-right: none; border-top: none;
           width: 100%;
           text-align: left;
-          transition: color 0.3s;
+          transition: color 0.25s;
         }
-        .m-nav-item:hover { color: var(--gold); }
-        .m-nav-item:first-child { border-top: 1px solid var(--border); margin-top: 8px; }
+        .m-nav-item:hover { color: var(--accent); }
+        .m-nav-item:first-child { border-top: 1px solid var(--border); margin-top: 6px; }
 
         .m-sub-list {
           overflow: hidden;
           max-height: 0;
-          transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1);
+          transition: max-height 0.42s cubic-bezier(0.4,0,0.2,1);
         }
-        .m-sub-list.open { max-height: 700px; }
+        .m-sub-list.is-open { max-height: 600px; }
 
         .m-sub-item {
           display: block;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.75rem;
-          font-weight: 400;
-          letter-spacing: 0.13em;
+          font-family: 'Nunito Sans', sans-serif;
+          font-size: 0.78rem;
+          font-weight: 600;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
           color: var(--muted);
           text-decoration: none;
-          padding: 11px 0 11px 18px;
-          border-bottom: 1px solid rgba(255,255,255,0.04);
+          padding: 11px 0 11px 20px;
+          border-bottom: 1px solid #f0ece8;
           transition: color 0.2s, padding-left 0.2s;
         }
-        .m-sub-item:hover { color: var(--gold); padding-left: 26px; }
+        .m-sub-item:hover { color: var(--accent); padding-left: 28px; }
 
-        .hamburger-line {
+        /* hamburger */
+        .h-line {
           display: block;
-          height: 1px;
-          background: currentColor;
-          transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+          height: 2px;
+          background: var(--text);
+          border-radius: 2px;
+          transition: transform 0.32s cubic-bezier(0.4,0,0.2,1), opacity 0.22s ease, width 0.3s ease;
           transform-origin: center;
         }
       `}</style>
 
-      {/* ─── Main Navbar ─── */}
+      {/* ══════════════ HEADER ══════════════ */}
       <header
-        className={`nav-root fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "scrolled nav-backdrop bg-[#0a0a0a]/93 border-b border-white/[0.07]"
-            : "bg-transparent"
+        className={`nav-root fixed top-0 left-0 right-0 z-50 transition-shadow duration-300 ${
+          scrolled ? "is-scrolled" : ""
         }`}
       >
-        <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-16">
-          <div className="flex items-center justify-between h-[84px]">
+        {/* ── inner wrapper: Logo | Nav (centred) | Shop ── */}
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
+          <div className="flex items-center justify-between h-[76px] lg:grid lg:grid-cols-[auto_1fr_auto] lg:gap-4">
 
-            {/* ── Logo ── */}
-            <a href="/" className="logo-link flex items-center select-none shrink-0" aria-label="Home">
+            {/* 1. Logo — left */}
+            <a href="/" className="logo-link shrink-0 flex items-center" aria-label="Home">
               <Image
                 src="/logo.png"
                 alt="Logo"
-                width={190}
-                height={54}
+                width={180}
+                height={52}
                 priority
                 className="logo-img"
               />
             </a>
 
-            {/* ── Desktop Nav ── */}
-            <nav className="hidden lg:flex items-center gap-8 xl:gap-10">
+            {/* 2. Nav links — centred in the middle column */}
+            <nav className="hidden lg:flex items-center justify-center gap-6 xl:gap-8">
 
-              {/* Home */}
               <a href="/" className="nav-link">Home</a>
 
-              {/* About */}
+              {/* About dropdown */}
               <div className="relative" ref={aboutRef}>
                 <button
-                  className={`nav-link ${aboutOpen ? "open" : ""}`}
+                  className={`nav-link ${aboutOpen ? "is-open" : ""}`}
                   onClick={() => { setAboutOpen(p => !p); setSubsOpen(false); }}
                 >
                   About
                   <span className={`chev ${aboutOpen ? "up" : ""}`} />
                 </button>
-                <div className={`drop-panel ${aboutOpen ? "visible" : ""}`}>
+                <div className={`drop-panel ${aboutOpen ? "is-visible" : ""}`}>
                   {ABOUT_LINKS.map(item => (
-                    <a key={item.label} href={item.href} className="drop-item" onClick={() => setAboutOpen(false)}>
+                    <a key={item.label} href={item.href} className="drop-item"
+                       onClick={() => setAboutOpen(false)}>
                       <span className="dot" />
                       {item.label}
                     </a>
@@ -355,22 +345,22 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* Our Services */}
               <a href="#services" className="nav-link">Our Services</a>
 
-              {/* Our Subsidiaries */}
+              {/* Subsidiaries dropdown */}
               <div className="relative" ref={subsRef}>
                 <button
-                  className={`nav-link ${subsOpen ? "open" : ""}`}
+                  className={`nav-link ${subsOpen ? "is-open" : ""}`}
                   onClick={() => { setSubsOpen(p => !p); setAboutOpen(false); }}
                 >
                   Our Subsidiaries
                   <span className={`chev ${subsOpen ? "up" : ""}`} />
                 </button>
-                <div className={`drop-panel ${subsOpen ? "visible" : ""}`} style={{ minWidth: 230 }}>
+                <div className={`drop-panel ${subsOpen ? "is-visible" : ""}`} style={{ minWidth: 230 }}>
                   {SUBSIDIARIES.map((item, i) => (
                     <div key={item.label}>
-                      <a href={item.href} className="drop-item" onClick={() => setSubsOpen(false)}>
+                      <a href={item.href} className="drop-item"
+                         onClick={() => setSubsOpen(false)}>
                         <span className="dot" />
                         {item.label}
                       </a>
@@ -379,76 +369,96 @@ export default function Navbar() {
                   ))}
                 </div>
               </div>
-
             </nav>
 
-            {/* ── Shop CTA ── */}
-            <div className="hidden lg:block">
-              <button className="shop-btn">
-                <span>Shop Now</span>
-              </button>
+            {/* 3. Shop Now — right */}
+            <div className="hidden lg:flex items-center justify-end">
+              <button className="shop-btn">Shop Now</button>
             </div>
 
-            {/* ── Mobile Hamburger ── */}
+            {/* Mobile hamburger */}
             <button
-              className="lg:hidden flex flex-col justify-center items-end gap-[7px] w-8 h-8 text-[#f5f0e8] relative z-50"
+              className="lg:hidden flex flex-col justify-center items-center gap-[6px] w-9 h-9 relative z-50"
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label="Toggle menu"
             >
-              <span className="hamburger-line w-6" style={{
+              <span className="h-line w-6" style={{
                 transform: menuOpen ? "translateY(8px) rotate(45deg)" : "none",
-                background: menuOpen ? "#c9a96e" : "currentColor",
+                background: menuOpen ? "var(--accent)" : "var(--text)",
               }} />
-              <span className="hamburger-line w-4" style={{ opacity: menuOpen ? 0 : 1 }} />
-              <span className="hamburger-line" style={{
+              <span className="h-line w-4" style={{ opacity: menuOpen ? 0 : 1 }} />
+              <span className="h-line" style={{
                 width: menuOpen ? "24px" : "20px",
                 transform: menuOpen ? "translateY(-8px) rotate(-45deg)" : "none",
-                background: menuOpen ? "#c9a96e" : "currentColor",
+                background: menuOpen ? "var(--accent)" : "var(--text)",
               }} />
             </button>
+
           </div>
         </div>
+
+        {/* bottom border line */}
+        <div className="h-px bg-[var(--border)]" />
       </header>
 
-      {/* ─── Mobile Menu ─── */}
-      <div className={`mobile-overlay ${menuOpen ? "open" : ""}`}>
-        <div className="grain-overlay" />
+      {/* ══════════════ MOBILE MENU ══════════════ */}
+      <div className={`mobile-overlay ${menuOpen ? "is-open" : ""}`}>
 
-        {/* Top bar */}
-        <div className="flex items-center justify-between px-6 h-[84px] border-b border-white/[0.07] shrink-0">
-          <a href="/" className="logo-link" onClick={() => setMenuOpen(false)}>
-            <Image src="/logo.png" alt="Logo" width={160} height={46} className="logo-img" style={{ height: "44px" }} />
+        {/* top bar */}
+        <div className="flex items-center justify-between px-5 h-[76px] border-b border-[var(--border)] shrink-0">
+          <a href="/" className="logo-link" onClick={() => setMenuOpen(false)} aria-label="Home">
+            <Image src="/logo.png" alt="Logo" width={160} height={44}
+              className="logo-img" style={{ height: "44px" }} />
           </a>
+          {/* close X */}
+          <button
+            className="flex flex-col justify-center items-center gap-[6px] w-9 h-9"
+            onClick={() => setMenuOpen(false)}
+            aria-label="Close menu"
+          >
+            <span className="h-line w-6" style={{
+              transform: "translateY(8px) rotate(45deg)",
+              background: "var(--accent)",
+            }} />
+            <span className="h-line w-6" style={{
+              transform: "translateY(-0px) rotate(-45deg)",
+              background: "var(--accent)",
+            }} />
+          </button>
         </div>
 
-        {/* Nav items */}
-        <nav className="flex flex-col px-6 pt-2 pb-6 flex-1 relative z-10">
+        {/* nav links */}
+        <nav className="flex flex-col px-6 pt-2 pb-6 flex-1">
 
           <a href="/" className="m-nav-item" onClick={() => setMenuOpen(false)}>Home</a>
 
-          {/* About accordion */}
           <button className="m-nav-item" onClick={() => setMobileAbout(p => !p)}>
             About
-            <span className={`chev ${mobileAbout ? "up" : ""}`} style={{ marginRight: 6, color: "var(--gold)" }} />
+            <span className={`chev ${mobileAbout ? "up" : ""}`}
+              style={{ color: "var(--accent)", marginRight: 4 }} />
           </button>
-          <div className={`m-sub-list ${mobileAbout ? "open" : ""}`}>
+          <div className={`m-sub-list ${mobileAbout ? "is-open" : ""}`}>
             {ABOUT_LINKS.map(item => (
-              <a key={item.label} href={item.href} className="m-sub-item" onClick={() => setMenuOpen(false)}>
+              <a key={item.label} href={item.href} className="m-sub-item"
+                 onClick={() => setMenuOpen(false)}>
                 {item.label}
               </a>
             ))}
           </div>
 
-          <a href="#services" className="m-nav-item" onClick={() => setMenuOpen(false)}>Our Services</a>
+          <a href="#services" className="m-nav-item" onClick={() => setMenuOpen(false)}>
+            Our Services
+          </a>
 
-          {/* Subsidiaries accordion */}
           <button className="m-nav-item" onClick={() => setMobileSubs(p => !p)}>
             Our Subsidiaries
-            <span className={`chev ${mobileSubs ? "up" : ""}`} style={{ marginRight: 6, color: "var(--gold)" }} />
+            <span className={`chev ${mobileSubs ? "up" : ""}`}
+              style={{ color: "var(--accent)", marginRight: 4 }} />
           </button>
-          <div className={`m-sub-list ${mobileSubs ? "open" : ""}`}>
+          <div className={`m-sub-list ${mobileSubs ? "is-open" : ""}`}>
             {SUBSIDIARIES.map(item => (
-              <a key={item.label} href={item.href} className="m-sub-item" onClick={() => setMenuOpen(false)}>
+              <a key={item.label} href={item.href} className="m-sub-item"
+                 onClick={() => setMenuOpen(false)}>
                 {item.label}
               </a>
             ))}
@@ -456,14 +466,14 @@ export default function Navbar() {
 
         </nav>
 
-        {/* Bottom CTA */}
-        <div className="px-6 pb-10 shrink-0 relative z-10">
+        {/* bottom CTA */}
+        <div className="px-6 pb-10 shrink-0">
           <button
-            className="shop-btn w-full text-center"
-            style={{ clipPath: "none", borderRadius: "2px", width: "100%" }}
+            className="shop-btn w-full"
+            style={{ borderRadius: "4px" }}
             onClick={() => setMenuOpen(false)}
           >
-            <span>Shop Now</span>
+            Shop Now
           </button>
         </div>
       </div>
