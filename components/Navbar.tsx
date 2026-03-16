@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 const NAV_LINKS = [
   { label: "Work", href: "#work" },
@@ -35,26 +36,30 @@ export default function Navbar() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
 
         .nav-root {
           font-family: 'DM Sans', sans-serif;
         }
 
-        .brand-word {
-          font-family: 'Cormorant Garamond', serif;
-          font-weight: 300;
-          letter-spacing: 0.08em;
+        /* ── Logo image ── */
+        .logo-img {
+          height: 36px;
+          width: auto;
+          object-fit: contain;
+          /* Make pure-white or light logos pop on dark bg */
+          filter: brightness(1.1) drop-shadow(0 0 8px rgba(201,169,110,0.25));
+          transition: filter 0.35s ease, transform 0.35s ease;
         }
 
-        .brand-dot {
-          display: inline-block;
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #c9a96e;
-          margin: 0 1px 2px 1px;
-          vertical-align: middle;
+        .logo-link:hover .logo-img {
+          filter: brightness(1.25) drop-shadow(0 0 14px rgba(201,169,110,0.5));
+          transform: scale(1.03);
+        }
+
+        /* Scrolled: slightly smaller logo */
+        .scrolled .logo-img {
+          height: 30px;
         }
 
         .nav-link {
@@ -127,7 +132,7 @@ export default function Navbar() {
           z-index: 1;
         }
 
-        /* Mobile menu overlay */
+        /* ── Mobile full-screen menu ── */
         .mobile-overlay {
           position: fixed;
           inset: 0;
@@ -166,7 +171,7 @@ export default function Navbar() {
           transform: translateY(0);
         }
 
-        .mobile-overlay.open .mobile-link:nth-child(1) { transition-delay: 0.1s; }
+        .mobile-overlay.open .mobile-link:nth-child(1) { transition-delay: 0.10s; }
         .mobile-overlay.open .mobile-link:nth-child(2) { transition-delay: 0.18s; }
         .mobile-overlay.open .mobile-link:nth-child(3) { transition-delay: 0.26s; }
         .mobile-overlay.open .mobile-link:nth-child(4) { transition-delay: 0.34s; }
@@ -175,11 +180,12 @@ export default function Navbar() {
           display: block;
           height: 1px;
           background: currentColor;
-          transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, width 0.35s ease;
+          transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                      opacity 0.25s ease,
+                      width 0.35s ease;
           transform-origin: center;
         }
 
-        /* Noise grain overlay on mobile menu */
         .grain-overlay {
           position: absolute;
           inset: 0;
@@ -199,28 +205,23 @@ export default function Navbar() {
       <header
         className={`nav-root fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? "nav-backdrop bg-[#0c0c0c]/90 border-b border-white/[0.07]"
+            ? "scrolled nav-backdrop bg-[#0c0c0c]/90 border-b border-white/[0.07]"
             : "bg-transparent"
         }`}
       >
         <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-16">
           <div className="flex items-center justify-between h-[72px]">
 
-            {/* ── Logo ── */}
-            <a href="/" className="flex items-center gap-0 select-none group">
-              <span
-                className="brand-word text-[1.35rem] text-[#f5f0e8] tracking-widest uppercase"
-                style={{ fontStyle: "normal" }}
-              >
-                FORME
-              </span>
-              <span className="brand-dot mx-[5px] group-hover:scale-125 transition-transform duration-300" />
-              <span
-                className="brand-word text-[1.35rem] text-[#c9a96e] tracking-widest uppercase"
-                style={{ fontStyle: "italic" }}
-              >
-                Studio
-              </span>
+            {/* ── Logo Image ── */}
+            <a href="/" className="logo-link flex items-center select-none" aria-label="Forme Studio — Home">
+              <Image
+                src="/logo.png"
+                alt="Forme Studio"
+                width={160}
+                height={40}
+                priority
+                className="logo-img"
+              />
             </a>
 
             {/* ── Desktop Nav Links ── */}
@@ -250,15 +251,7 @@ export default function Navbar() {
                     opacity="0.7"
                   />
                 </svg>
-                <span
-                  style={{
-                    fontSize: "0.625rem",
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  Awwwards
-                </span>
+               
               </div>
 
               <div className="w-px h-4 bg-white/10" />
@@ -277,9 +270,7 @@ export default function Navbar() {
               <span
                 className="hamburger-line w-6"
                 style={{
-                  transform: menuOpen
-                    ? "translateY(8px) rotate(45deg)"
-                    : "none",
+                  transform: menuOpen ? "translateY(8px) rotate(45deg)" : "none",
                   background: menuOpen ? "#c9a96e" : "currentColor",
                 }}
               />
@@ -293,9 +284,7 @@ export default function Navbar() {
               <span
                 className="hamburger-line w-5"
                 style={{
-                  transform: menuOpen
-                    ? "translateY(-8px) rotate(-45deg)"
-                    : "none",
+                  transform: menuOpen ? "translateY(-8px) rotate(-45deg)" : "none",
                   width: menuOpen ? "24px" : undefined,
                   background: menuOpen ? "#c9a96e" : "currentColor",
                 }}
@@ -304,7 +293,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* ── Ticker strip (optional accent) ── */}
+        {/* Gradient rule under navbar when unscrolled */}
         <div
           className={`hidden lg:flex items-center overflow-hidden h-[1px] transition-opacity duration-500 ${
             scrolled ? "opacity-0" : "opacity-100"
@@ -315,31 +304,26 @@ export default function Navbar() {
       </header>
 
       {/* ─── Mobile Full-screen Menu ─── */}
-      <div
-        ref={menuRef}
-        className={`mobile-overlay ${menuOpen ? "open" : ""}`}
-      >
+      <div ref={menuRef} className={`mobile-overlay ${menuOpen ? "open" : ""}`}>
         <div className="grain-overlay" />
 
         {/* Top bar inside overlay */}
         <div className="flex items-center justify-between px-6 h-[72px] border-b border-white/[0.07] shrink-0">
-          <a href="/" className="flex items-center select-none">
-            <span className="brand-word text-[1.25rem] text-[#c9a96e] tracking-widest uppercase">
-              FORME
-            </span>
-            <span className="brand-dot mx-[5px]" />
-            <span
-              className="brand-word text-[1.25rem] text-[#c9a96e] tracking-widest uppercase"
-              style={{ fontStyle: "italic" }}
-            >
-              Studio
-            </span>
+          <a href="/" className="logo-link flex items-center select-none" aria-label="Forme Studio — Home">
+            <Image
+              src="/logo.png"
+              alt="Forme Studio"
+              width={130}
+              height={34}
+              className="logo-img"
+              style={{ height: "30px" }}
+            />
           </a>
         </div>
 
         {/* Links */}
         <nav className="flex flex-col justify-center flex-1 px-8 gap-2">
-          {NAV_LINKS.map((link, i) => (
+          {NAV_LINKS.map((link) => (
             <a
               key={link.label}
               href={link.href}
