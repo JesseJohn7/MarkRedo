@@ -75,14 +75,14 @@ export default function Navbar() {
 
         /* ─── Logo ─── */
         .logo-img {
-          height: 52px;
+          height: 68px;
           width: auto;
           object-fit: contain;
           transition: transform 0.35s ease, height 0.35s ease;
           display: block;
         }
         .logo-link:hover .logo-img { transform: scale(1.03); }
-        .nav-root.is-scrolled .logo-img { height: 42px; }
+        .nav-root.is-scrolled .logo-img { height: 54px; }
 
         /* ─── Desktop nav link ─── */
         .nav-link {
@@ -200,11 +200,11 @@ export default function Navbar() {
         /* ─── Shop Now button — solid rectangle ─── */
         .shop-btn {
           font-family: 'Nunito Sans', sans-serif;
-          font-size: 0.78rem;
+          font-size: 0.7rem;
           font-weight: 700;
-          letter-spacing: 0.18em;
+          letter-spacing: 0.14em;
           text-transform: uppercase;
-          padding: 12px 28px;
+          padding: 10px 18px;
           background: var(--accent);
           color: #ffffff;
           border: 2px solid var(--accent);
@@ -212,12 +212,12 @@ export default function Navbar() {
           cursor: pointer;
           white-space: nowrap;
           transition: background 0.28s ease, color 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
-          box-shadow: 0 2px 12px rgba(201,169,110,0.25);
+          box-shadow: 0 2px 10px rgba(201,169,110,0.22);
         }
         .shop-btn:hover {
           background: var(--accent-dark);
           border-color: var(--accent-dark);
-          box-shadow: 0 4px 20px rgba(201,169,110,0.4);
+          box-shadow: 0 4px 18px rgba(201,169,110,0.38);
           color: #ffffff;
         }
 
@@ -306,7 +306,7 @@ export default function Navbar() {
       >
         {/* ── inner wrapper: Logo | Nav (centred) | Shop ── */}
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
-          <div className="flex items-center justify-between h-[76px] lg:grid lg:grid-cols-[auto_1fr_auto] lg:gap-4">
+          <div className="flex items-center justify-between h-[88px] lg:grid lg:grid-cols-[auto_1fr_auto] lg:gap-4">
 
             {/* 1. Logo — left */}
             <a href="/" className="logo-link shrink-0 flex items-center" aria-label="Home">
@@ -405,7 +405,7 @@ export default function Navbar() {
       <div className={`mobile-overlay ${menuOpen ? "is-open" : ""}`}>
 
         {/* top bar */}
-        <div className="flex items-center justify-between px-5 h-[76px] border-b border-[var(--border)] shrink-0">
+        <div className="flex items-center justify-between px-5 h-[88px] border-b border-[var(--border)] shrink-0">
           <a href="/" className="logo-link" onClick={() => setMenuOpen(false)} aria-label="Home">
             <Image src="/logo.png" alt="Logo" width={160} height={44}
               className="logo-img" style={{ height: "44px" }} />
