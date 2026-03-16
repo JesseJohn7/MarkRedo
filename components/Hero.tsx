@@ -73,9 +73,23 @@ export default function AboutPage() {
           min-height: 90vh;
           padding-top: 88px;
         }
+
+        /* Desktop: copy left (order 1), image right (order 2) — matches DOM order */
+        .hero-copy { order: 1; }
+        .hero-vis  { order: 2; }
+
+        /* Mobile: single column, image on top (order 1), copy below (order 2) */
         @media (max-width: 860px) {
-          .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 96px; }
-          .hero-vis { display: none; }
+          .hero {
+            grid-template-columns: 1fr;
+            min-height: auto;
+            padding-top: 80px;
+          }
+          .hero-vis  {
+            order: 1;
+            min-height: 300px;
+          }
+          .hero-copy { order: 2; }
         }
 
         .hero-copy {
@@ -85,7 +99,7 @@ export default function AboutPage() {
           padding: 72px 56px 72px 72px;
         }
         @media (max-width: 1100px) { .hero-copy { padding: 56px 40px 56px 48px; } }
-        @media (max-width: 860px)  { .hero-copy { padding: 48px 24px 64px; } }
+        @media (max-width: 860px)  { .hero-copy { padding: 40px 24px 56px; } }
 
         .hero-h1 {
           font-family: 'Playfair Display', serif;
@@ -164,14 +178,12 @@ export default function AboutPage() {
           color: var(--muted);
           margin-top: 5px;
         }
-
       `}</style>
 
       <div className="ap">
-
-        {/* ══════ HERO ══════ */}
         <section className="hero">
 
+          {/* Copy — left on desktop, below image on mobile */}
           <div className="hero-copy">
             <Fade delay={0}>
               <h1 className="hero-h1">
@@ -181,7 +193,7 @@ export default function AboutPage() {
             </Fade>
             <Fade delay={120}>
               <p className="hero-lead">
-                MarkBrand is a multi-industry holding company driven by a singular obsession creating brands that don't just compete, but lead. From film to finance, from hospitality to media, we build with purpose.
+                MarkBrand is a multi-industry holding company driven by a singular obsession — creating brands that don't just compete, but lead. From film to finance, from hospitality to media, we build with purpose.
               </p>
             </Fade>
             <Fade delay={220}>
@@ -192,6 +204,7 @@ export default function AboutPage() {
             </Fade>
           </div>
 
+          {/* Image — right on desktop, above text on mobile */}
           <div className="hero-vis">
             <Image
               src="/hero.jpg"
@@ -207,7 +220,6 @@ export default function AboutPage() {
           </div>
 
         </section>
-
       </div>
     </>
   );
