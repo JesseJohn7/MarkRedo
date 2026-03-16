@@ -406,19 +406,7 @@ export default function ServicesPage() {
         </div>
 
         {/* ── BOTTOM CTA ── */}
-        <div className="sp-cta">
-          <Fade>
-            <h2 className="sp-cta-title">
-              Ready to Build<br /><em>Something Great?</em>
-            </h2>
-            <p className="sp-cta-sub">
-              Let's talk about your project. Our team is ready to deliver excellence from day one.
-            </p>
-            <a href="#contact" className="sp-cta-btn">
-              Get In Touch →
-            </a>
-          </Fade>
-        </div>
+        
 
       </div>
     </>
