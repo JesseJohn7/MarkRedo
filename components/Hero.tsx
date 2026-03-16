@@ -213,10 +213,7 @@ export default function AboutPage() {
               style={{ objectFit: "cover" }}
               priority
             />
-            <div className="hero-badge">
-              <div className="hero-badge-num">2016</div>
-              <div className="hero-badge-lbl">Est. Year</div>
-            </div>
+           
           </div>
 
         </section>
