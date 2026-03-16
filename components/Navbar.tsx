@@ -324,7 +324,7 @@ export default function Navbar() {
         {/* Top bar inside overlay */}
         <div className="flex items-center justify-between px-6 h-[72px] border-b border-white/[0.07] shrink-0">
           <a href="/" className="flex items-center select-none">
-            <span className="brand-word text-[1.25rem] text-[#f5f0e8] tracking-widest uppercase">
+            <span className="brand-word text-[1.25rem] text-[#c9a96e] tracking-widest uppercase">
               FORME
             </span>
             <span className="brand-dot mx-[5px]" />
