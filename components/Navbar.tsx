@@ -372,9 +372,7 @@ export default function Navbar() {
             </nav>
 
             {/* 3. Shop Now — right */}
-            <div className="hidden lg:flex items-center justify-end">
-              <button className="shop-btn">Shop Now</button>
-            </div>
+            
 
             {/* Mobile hamburger */}
             <button
@@ -468,13 +466,7 @@ export default function Navbar() {
 
         {/* bottom CTA */}
         <div className="px-6 pb-10 shrink-0">
-          <button
-            className="shop-btn w-full"
-            style={{ borderRadius: "4px" }}
-            onClick={() => setMenuOpen(false)}
-          >
-            Shop Now
-          </button>
+         
         </div>
       </div>
     </>
