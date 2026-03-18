@@ -92,12 +92,12 @@ export default function ServicesPage() {
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito+Sans:wght@300;400;500;600;700&display=swap');
 
         :root {
-          --gold:      #c9a96e;
-          --gold-lt:   #e8d5b0;
-          --gold-dk:   #a8834a;
+          --gold:      #a8e6a1;
+          --gold-lt:   #d4f2cc;
+          --gold-dk:   #a8e6a1;
           --text:      #1a1a1a;
           --muted:     #6b6b6b;
-          --soft:      #9a9490;
+          --soft:      #8fa88b;
           --bg:        #ffffff;
           --bg-warm:   #ffffff;
           --bg-cream:  #ffffff;
@@ -238,7 +238,7 @@ export default function ServicesPage() {
           font-weight: 800;
           letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: var(--gold-dk);
+          color: var(--gold);
           margin-bottom: 8px;
         }
 
