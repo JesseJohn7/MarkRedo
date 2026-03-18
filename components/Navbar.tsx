@@ -13,9 +13,9 @@ const SUBSIDIARIES = [
 ];
 
 const ABOUT_LINKS = [
-  { label: "Our Story", href: "#our-story" },
+  { label: "Our Story", href: "/about" },
   { label: "Our Team",  href: "/team" },
-  { label: "Gallery",   href: "#gallery" },
+  { label: "Gallery",   href: "/gallery" },
 ];
 
 export default function Navbar() {
