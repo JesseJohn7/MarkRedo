@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import Image from "next/image";
 
 const TEAM = [
@@ -368,6 +369,7 @@ export default function TeamPage() {
           </div>
         </div>
       </div>
+      <Footer/>
     </>
   );
 }
