@@ -25,7 +25,7 @@ export default function Footer() {
 
         .footer {
           font-family: 'Nunito Sans', sans-serif;
-          background: var(--light-bg);
+          background: #ffffff;
           border-top: 1px solid var(--border);
           color: var(--text);
         }
@@ -213,7 +213,7 @@ export default function Footer() {
         .footer-logo-img {
           height: auto;
           width: 100%;
-          max-width: 200px;
+          max-width: 150px;
           object-fit: contain;
           margin-bottom: 12px;
         }
