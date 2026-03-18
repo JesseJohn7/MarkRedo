@@ -14,7 +14,7 @@ const SUBSIDIARIES = [
 
 const ABOUT_LINKS = [
   { label: "Our Story", href: "#our-story" },
-  { label: "Our Team",  href: "#our-team" },
+  { label: "Our Team",  href: "/team" },
   { label: "Gallery",   href: "#gallery" },
 ];
 
@@ -438,7 +438,8 @@ export default function Navbar() {
           <div className={`m-sub-list ${mobileAbout ? "is-open" : ""}`}>
             {ABOUT_LINKS.map(item => (
               <a key={item.label} href={item.href} className="m-sub-item"
-                 onClick={() => setMenuOpen(false)}>
+                 onClick={() => {setMenuOpen(false); setMobileAbout(false);}}
+              >
                 {item.label}
               </a>
             ))}

@@ -354,7 +354,7 @@ export default function ServicesPage() {
           <Fade>
             <div className="sp-header-label">What We Do</div>
             <h1 className="sp-header-title">
-              Our <em>Services</em>
+              Our Services<em></em>
             </h1>
             <p className="sp-header-sub">
               From the first print to a full brand identity — world-class creative and production services under one roof.
