@@ -45,16 +45,12 @@ export default function AboutPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Lato:wght@300;400;700&display=swap');
 
         :root {
-          --gold:       #c9a96e;
-          --gold-lt:    #e8d5b0;
-          --gold-dk:    #a8834a;
-          --text:       #1c1c1c;
-          --muted:      #6b6b6b;
-          --bg:         #ffffff;
-          --bg-warm:    #faf8f5;
-          --bg-cream:   #f5f0e8;
-          --border:     #e8e2da;
-          --shadow:     rgba(0,0,0,0.07);
+          --green: #a8e6a1;
+          --green-dark: #5BB855;
+          --text: #1a1a1a;
+          --muted: #6b6b6b;
+          --bg: #ffffff;
+          --border: #e4ead8;
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -100,27 +96,27 @@ export default function AboutPage() {
         @media (max-width: 860px)  { .hero-copy { padding: 40px 24px 56px; } }
 
         .hero-h1 {
-          font-family: 'Montserrat', sans-serif;
-          font-size: clamp(2.4rem, 4.5vw, 4.4rem);
-          font-weight: 800;
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(2.4rem, 5vw, 4.8rem);
+          font-weight: 700;
           line-height: 1.08;
-          letter-spacing: -0.02em;
+          letter-spacing: -0.01em;
           color: var(--text);
           margin-bottom: 24px;
         }
         .hero-h1 em {
           font-style: italic;
           font-weight: 600;
-          color: var(--gold);
+          color: var(--green);
         }
 
         .hero-lead {
-          font-family: 'Lato', sans-serif;
-          font-size: 1.05rem;
+          font-family: 'Nunito Sans', sans-serif;
+          font-size: 1.1rem;
           font-weight: 300;
           line-height: 1.85;
           color: var(--muted);
-          max-width: 460px;
+          max-width: 520px;
           margin-bottom: 40px;
         }
 
@@ -128,24 +124,24 @@ export default function AboutPage() {
           display: inline-flex;
           align-items: center;
           gap: 10px;
-          font-family: 'Montserrat', sans-serif;
-          font-size: 0.72rem;
-          font-weight: 700;
-          letter-spacing: 0.18em;
+          font-family: 'Playfair Display', serif;
+          font-size: 0.85rem;
+          font-weight: 600;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
           color: #fff;
-          background: var(--text);
-          padding: 14px 30px;
-          border: 2px solid var(--text);
+          background: var(--green);
+          padding: 14px 32px;
+          border: 2px solid var(--green);
           border-radius: 3px;
           text-decoration: none;
           transition: background 0.28s, border-color 0.28s, box-shadow 0.28s;
           align-self: flex-start;
         }
         .btn-primary:hover {
-          background: var(--gold);
-          border-color: var(--gold);
-          box-shadow: 0 6px 24px rgba(201,169,110,0.35);
+          background: var(--green-dark);
+          border-color: var(--green-dark);
+          box-shadow: 0 6px 24px rgba(168, 230, 161, 0.35);
         }
         .btn-arrow { transition: transform 0.22s; }
         .btn-primary:hover .btn-arrow { transform: translateX(4px); }

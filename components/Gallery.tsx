@@ -115,7 +115,7 @@ export default function Gallery() {
           font-size: clamp(2.4rem, 5vw, 4.2rem);
           font-weight: 700;
           line-height: 1.08;
-          color: var(--green);
+          color: var(--text);
           margin-bottom: 20px;
         }
 
@@ -123,7 +123,7 @@ export default function Gallery() {
           font-size: 1rem;
           font-weight: 300;
           line-height: 1.8;
-          color: var(--green);
+          color: var(--muted);
           max-width: 600px;
           margin: 0 auto;
         }
