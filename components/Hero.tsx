@@ -113,7 +113,7 @@ export default function AboutPage() {
         .hero-lead {
           font-family: 'Nunito Sans', sans-serif;
           font-size: 1.1rem;
-          font-weight: 300;
+          font-weight: 400;
           line-height: 1.85;
           color: var(--muted);
           max-width: 520px;
@@ -130,21 +130,30 @@ export default function AboutPage() {
           letter-spacing: 0.1em;
           text-transform: uppercase;
           color: #fff;
-          background: var(--green);
+          background: var(--green-dark);
           padding: 14px 32px;
-          border: 2px solid var(--green);
+          border: 2px solid var(--green-dark);
           border-radius: 3px;
           text-decoration: none;
           transition: background 0.28s, border-color 0.28s, box-shadow 0.28s;
           align-self: flex-start;
         }
         .btn-primary:hover {
-          background: var(--green-dark);
-          border-color: var(--green-dark);
+          background: var(--green);
+          border-color: var(--green);
           box-shadow: 0 6px 24px rgba(168, 230, 161, 0.35);
         }
         .btn-arrow { transition: transform 0.22s; }
         .btn-primary:hover .btn-arrow { transform: translateX(4px); }
+        
+        /* Generation text turns green on button hover */
+        .hero-generation {
+          transition: color 0.28s ease;
+          color: var(--text);
+        }
+        .hero-copy:has(.btn-primary:hover) .hero-generation {
+          color: var(--green);
+        }
 
         /* hero visual */
         .hero-vis {
@@ -188,8 +197,8 @@ export default function AboutPage() {
           <div className="hero-copy">
             <Fade delay={0}>
               <h1 className="hero-h1">
-                Building Brands That<br />
-                <em>Define Generations</em>
+                Building Brands That Define<br />
+                <em className="hero-generation">Generations</em>
               </h1>
             </Fade>
             <Fade delay={120}>
