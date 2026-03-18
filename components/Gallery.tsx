@@ -4,18 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 const GALLERY_ITEMS = [
-  { id: 1, img: "/img1.jpg", title: "Commercial Printing", category: "Print" },
-  { id: 2, img: "/img2.jpg", title: "Creative Branding", category: "Branding" },
-  { id: 3, img: "/img3.jpg", title: "Professional Photography", category: "Photography" },
-  { id: 4, img: "/img4.jpg", title: "Media Production", category: "Video" },
-  { id: 5, img: "/img5.jpg", title: "Fashion Design", category: "Fashion" },
-  { id: 6, img: "/img6.jpg", title: "Digital Education", category: "Education" },
-  { id: 7, img: "/img1.jpg", title: "Brand Strategy", category: "Branding" },
-  { id: 8, img: "/img2.jpg", title: "Event Coverage", category: "Photography" },
-  { id: 9, img: "/img3.jpg", title: "Corporate Uniforms", category: "Fashion" },
+  { id: 1, img: "/img1.jpg", title: "Commercial Printing" },
+  { id: 2, img: "/img2.jpg", title: "Creative Branding" },
+  { id: 3, img: "/img3.jpg", title: "Professional Photography" },
+  { id: 4, img: "/img4.jpg", title: "Media Production" },
+  { id: 5, img: "/img5.jpg", title: "Fashion Design" },
+  { id: 6, img: "/img6.jpg", title: "Digital Education" },
+  { id: 7, img: "/img1.jpg", title: "Brand Strategy" },
+  { id: 8, img: "/img2.jpg", title: "Event Coverage" },
+  { id: 9, img: "/img3.jpg", title: "Corporate Uniforms" },
 ];
-
-const CATEGORIES = ["All", "Print", "Branding", "Photography", "Video", "Fashion", "Education"];
 
 function useFadeIn(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
@@ -53,19 +51,13 @@ function Fade({ children, delay = 0, className = "" }: {
 }
 
 export default function Gallery() {
-  const [selectedCategory, setSelectedCategory] = useState("All");
-
-  const filteredItems = selectedCategory === "All"
-    ? GALLERY_ITEMS
-    : GALLERY_ITEMS.filter(item => item.category === selectedCategory);
-
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito+Sans:wght@300;400;500;600;700&display=swap');
 
         :root {
-          --green: #6ECB63;
+          --green: #a8e6a1;
           --green-dark: #5BB855;
           --text: #1a1a1a;
           --muted: #6b6b6b;
@@ -123,7 +115,7 @@ export default function Gallery() {
           font-size: clamp(2.4rem, 5vw, 4.2rem);
           font-weight: 700;
           line-height: 1.08;
-          color: var(--text);
+          color: var(--green);
           margin-bottom: 20px;
         }
 
@@ -131,7 +123,7 @@ export default function Gallery() {
           font-size: 1rem;
           font-weight: 300;
           line-height: 1.8;
-          color: var(--muted);
+          color: var(--green);
           max-width: 600px;
           margin: 0 auto;
         }
@@ -147,46 +139,6 @@ export default function Gallery() {
           .gallery-container {
             padding: 0 24px 80px;
           }
-        }
-
-        /* Filter Buttons */
-        .gallery-filters {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 12px;
-          margin: 60px 0 50px;
-          padding: 0 20px;
-        }
-
-        @media (max-width: 768px) {
-          .gallery-filters {
-            margin: 48px 0 40px;
-            gap: 10px;
-          }
-        }
-
-        .filter-btn {
-          font-family: 'Nunito Sans', sans-serif;
-          font-size: 0.8rem;
-          font-weight: 600;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          padding: 10px 22px;
-          background: transparent;
-          color: var(--muted);
-          border: 1.5px solid var(--border);
-          border-radius: 4px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          white-space: nowrap;
-        }
-
-        .filter-btn:hover,
-        .filter-btn.active {
-          color: var(--bg);
-          background: var(--green);
-          border-color: var(--green);
         }
 
         /* Gallery Grid */
@@ -233,20 +185,21 @@ export default function Gallery() {
           transform: scale(1.08);
         }
 
-        /* Overlay */
-        .gallery-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, rgba(110, 203, 99, 0.7), rgba(91, 184, 85, 0.7));
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          opacity: 0;
-          transition: opacity 0.35s ease;
-          padding: 20px;
-          text-align: center;
+        /* Over20px;
+          margin-top: 40px;
         }
+
+        @media (max-width: 1024px) {
+          .gallery-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .gallery-grid {
+            grid-template-columns: 1fr;
+            gap: 16
 
         .gallery-item:hover .gallery-overlay {
           opacity: 1;
@@ -303,22 +256,9 @@ export default function Gallery() {
 
         {/* Container */}
         <div className="gallery-container">
-          {/* Filters */}
-          <div className="gallery-filters">
-            {CATEGORIES.map((category) => (
-              <button
-                key={category}
-                className={`filter-btn ${selectedCategory === category ? "active" : ""}`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-
           {/* Gallery Grid */}
           <div className="gallery-grid">
-            {filteredItems.map((item, i) => (
+            {GALLERY_ITEMS.map((item, i) => (
               <Fade key={item.id} delay={i * 50}>
                 <div className="gallery-item">
                   <div className="gallery-accent" />
@@ -329,7 +269,6 @@ export default function Gallery() {
                   />
                   <div className="gallery-overlay">
                     <div className="overlay-title">{item.title}</div>
-                    <div className="overlay-category">{item.category}</div>
                   </div>
                 </div>
               </Fade>
