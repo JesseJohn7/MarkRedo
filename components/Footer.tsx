@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -209,6 +210,14 @@ export default function Footer() {
           color: var(--text);
         }
 
+        .footer-logo-img {
+          height: auto;
+          width: 100%;
+          max-width: 200px;
+          object-fit: contain;
+          margin-bottom: 12px;
+        }
+
         .footer-brand-tagline {
           font-size: 0.85rem;
           color: var(--muted);
@@ -222,7 +231,13 @@ export default function Footer() {
           <div className="footer-grid">
             {/* Brand */}
             <div className="footer-section footer-brand">
-              <div className="footer-brand-name">MarkBrand</div>
+              <Image
+                src="/logo.png"
+                alt="MarkBrand Logo"
+                width={200}
+                height={60}
+                className="footer-logo-img"
+              />
               <p className="footer-brand-tagline">
                 Building brands that define generations across multiple industries.
               </p>
@@ -284,9 +299,9 @@ export default function Footer() {
                 </div>
               </div>
             </div>
+
           </div>
 
-          {/* Bottom Bar */}
           <div className="footer-bottom">
             <div className="footer-copyright">
               © {currentYear} MarkBrand. All rights reserved.
